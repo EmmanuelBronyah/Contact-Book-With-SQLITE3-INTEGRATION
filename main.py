@@ -89,13 +89,13 @@ def add_contact(conn, c):
                 except sqlite3.IntegrityError as e:
                     match str(e).lower():
                         case 'not null constraint failed: contacts.number':
-                            print('Number cannot be empty')
+                            print('The number field cannot be empty.')
                         case 'not null constraint failed: contacts.name':
-                            print('Name cannot be empty')
+                            print('The name field cannot be empty.')
                         case 'unique constraint failed: contacts.name':
-                            print('Name already exists')
+                            print('Name already exists.')
                         case 'unique constraint failed: contacts.number':
-                            print('Number already exists')
+                            print('Number already exists.')
         else:
             print('Number should not be zero or less')
     except ValueError:
@@ -151,7 +151,20 @@ def search_contact(conn, c):
 
 
 def delete_contact(conn, c):
-    pass
+    with conn:
+        c.execute("SELECT * FROM Contacts")
+        contacts = c.fetchall()
+        if contacts:
+            name = input('Enter the name of the person whose contact you want to remove: ').lower()
+            c.execute("SELECT * FROM Contacts WHERE name = :name", {'name': name})
+            contact = c.fetchone()
+            if contact:
+                c.execute("DELETE FROM Contacts WHERE name = :name", {'name': contact[0]})
+                print('Contact deleted.')
+            else:
+                print(f'Contact with contact name {name} does not exist')
+        else:
+            print('Contact book is empty')
 
 
 if __name__ == '__main__':
