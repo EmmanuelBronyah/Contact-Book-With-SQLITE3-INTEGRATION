@@ -103,15 +103,26 @@ def add_contact(conn, c):
 
 
 def edit_contact(conn, c):
-    pass
-    # name = input('Enter the name of the person whose contact you want to edit: ').lower()
-    # with conn:
-    #     c.execute("SELECT * FROM Contacts WHERE name=(:name)", {'name': name})
-    #     contact = c.fetchone()
-    #     new_name = input('Enter new name: ')
-    #     new_number = input('Enter new number: ')
-    #     new_address = input('Enter new address: ')
-    #     new_email = input('Enter new email: ')
+    name = input('Enter the name of the person whose contact you want to edit: ').lower()
+    with conn:
+        c.execute("SELECT * FROM Contacts WHERE name = :name", {'name': name})
+        contact = c.fetchone()
+        if contact:
+            prev_name, prev_number, prev_address, prev_email = contact
+            new_name = input('Enter new name: ')
+            new_number = input('Enter new number: ')
+            new_address = input('Enter new address: ')
+            new_email = input('Enter new email: ')
+            c.execute("UPDATE Contacts SET name = :new_name, number = :new_number, address = :new_address, "
+                      "email = :new_email "
+                      "WHERE name = :name",
+                      {'new_name': new_name if new_name != '' else prev_name,
+                       'new_number': new_number if new_number != '' else prev_number,
+                       'new_address': new_address if new_address != '' else prev_address,
+                       'new_email': new_email if new_email != '' else prev_email,
+                       'name': contact[0]})
+        else:
+            print('Contact does not exist.')
 
 
 def view_contact(conn, c):
