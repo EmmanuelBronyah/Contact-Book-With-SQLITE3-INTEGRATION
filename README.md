@@ -103,7 +103,7 @@ EMAIL: max@email.com
 ```shell
 Enter a command > delete
 Enter the name of the person whose contact you want to delete: Max
-Cnntact deleted 
+Contact deleted 
 ```
 
 ## Acknowledgement
