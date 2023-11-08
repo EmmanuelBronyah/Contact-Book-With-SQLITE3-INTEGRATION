@@ -126,7 +126,6 @@ def edit_contact(conn, c):
 
 
 def view_contact(conn, c):
-    labels = ['NAME', 'NUMBER', 'ADDRESS', 'EMAIL']
     with conn:
         c.execute("SELECT * FROM Contacts")
         contacts = c.fetchall()
@@ -139,7 +138,16 @@ def view_contact(conn, c):
 
 
 def search_contact(conn, c):
-    pass
+    name = input('Enter the name of the person whose contact you want to find: ').lower()
+    with conn:
+        c.execute("SELECT * FROM Contacts WHERE name = :name", {'name': name})
+        contact = c.fetchone()
+        if contact:
+            labels = ['NAME', 'NUMBER', 'ADDRESS', 'EMAIL']
+            for label, cd in zip(labels, contact):
+                print(f'{label}: {cd}')
+        else:
+            print('There is no such contact.')
 
 
 def delete_contact(conn, c):
