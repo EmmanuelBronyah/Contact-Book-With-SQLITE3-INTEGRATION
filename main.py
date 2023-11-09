@@ -1,5 +1,4 @@
 import sqlite3
-import sys
 import textwrap
 
 
@@ -12,6 +11,15 @@ def print_intro():
 
 
 def main():
+    """
+    Executes the entire program.
+
+    Executes various parts of the program based on the user's input.
+    Calls the create_table function which returns a connection to the database
+    and a cursor object. They are assigned to the connection and cursor variables
+    respectively and passed as arguments to other functions.
+
+    """
     print_intro()
 
     connection, cursor = create_table()
@@ -37,6 +45,10 @@ def main():
 
 
 def create_table():
+    """
+    Returns a database connection and a cursor object.
+
+    """
     conn = sqlite3.connect(':memory:')
     c = conn.cursor()
     with conn:
@@ -56,8 +68,9 @@ def get_user_input():
         Takes input from the user
 
         Input from the user is validated against allowed inputs.
-        Input from the user upon passing validation is returned.
-        None is returned if input from user fails validation.
+        Returns the user input if it is a verified command.
+        Returns None if input from user fails validation.
+
         """
     allowed_inputs = ['add', 'edit', 'search', 'view', 'delete', 'exit']
     user_input = input('Enter a command > ').lower()
@@ -67,6 +80,16 @@ def get_user_input():
 
 
 def add_contact(conn, c):
+    """
+    Adds contacts to the Contacts table
+
+    Contact details are received in the format 'name,number,address,email'
+    where name and address cannot empty.
+    Omitted contact details should be left blank where they will be populated
+    with the value None in the database. For example, omitting the address
+    would look like: 'name,number,,email'.
+
+    """
     try:
         number_of_contacts = int(input('How many contacts do you want to add > '))
         if number_of_contacts > 0:
@@ -80,6 +103,7 @@ def add_contact(conn, c):
                     with conn:
                         c.execute("INSERT INTO Contacts VALUES (:name, :number, :address, :email)",
                                   {'name': name, 'number': number, 'address': address, 'email': email})
+                        print('Contact saved.')
                 except ValueError:
                     text = 'Omitted fields should be left blank. ' \
                            'For example, to enter a contact with the address omitted you can enter it as: ' \
@@ -103,6 +127,15 @@ def add_contact(conn, c):
 
 
 def edit_contact(conn, c):
+    """
+    Makes changes to contact details.
+
+    The name of the person whose contact is to be edited is collected as
+    input from the user.
+    A contact detail of the contact to be edited maintains its original
+    value if it is not assigned a new value by the user.
+
+    """
     name = input('Enter the name of the person whose contact you want to edit: ').lower()
     with conn:
         c.execute("SELECT * FROM Contacts WHERE name = :name", {'name': name})
@@ -126,6 +159,10 @@ def edit_contact(conn, c):
 
 
 def view_contact(conn, c):
+    """
+    Lists out all the contacts in the database.
+
+    """
     with conn:
         c.execute("SELECT * FROM Contacts")
         contacts = c.fetchall()
@@ -138,6 +175,11 @@ def view_contact(conn, c):
 
 
 def search_contact(conn, c):
+    """
+    Displays the contacts information of the person whose name
+    matches the name entered by the user.
+
+    """
     name = input('Enter the name of the person whose contact you want to find: ').lower()
     with conn:
         c.execute("SELECT * FROM Contacts WHERE name = :name", {'name': name})
@@ -151,6 +193,11 @@ def search_contact(conn, c):
 
 
 def delete_contact(conn, c):
+    """
+    Deletes from the database the contact whose name matches the
+    name entered by the user.
+
+    """
     with conn:
         c.execute("SELECT * FROM Contacts")
         contacts = c.fetchall()
@@ -162,7 +209,7 @@ def delete_contact(conn, c):
                 c.execute("DELETE FROM Contacts WHERE name = :name", {'name': contact[0]})
                 print('Contact deleted.')
             else:
-                print(f'Contact with contact name {name} does not exist')
+                print(f'Contact with contact name {name} does not exist.')
         else:
             print('Contact book is empty')
 
