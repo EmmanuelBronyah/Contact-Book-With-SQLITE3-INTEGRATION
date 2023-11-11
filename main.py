@@ -49,7 +49,7 @@ def create_table():
     Returns a database connection and a cursor object.
 
     """
-    conn = sqlite3.connect(':memory:')
+    conn = sqlite3.connect('contacts.db')
     c = conn.cursor()
     with conn:
         c.execute("""
